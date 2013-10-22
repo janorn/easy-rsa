@@ -38,10 +38,11 @@ Release Notes for easy-rsa-2.0
 
 * The vars file has been modified -- the following extra
   variables have been added: EASY_RSA, CA_EXPIRE,
-  KEY_EXPIRE.
+  KEY_EXPIRE, CRL_EXPIRE.
 
 * The make-crl and revoke-crt scripts have been removed and
-  are replaced by the revoke-full script.
+  are replaced by the revoke-full script. The create-crl script 
+  has been added for initial crl.
 
 * The "Organizational Unit" X509 field can be set using
   the KEY_OU environmental variable before calling pkitool.

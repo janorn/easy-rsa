@@ -58,6 +58,9 @@ export CA_EXPIRE=3650
 # In how many days should certificates expire?
 export KEY_EXPIRE=3650
 
+# In how many days should the revocation list expire?
+export CRL_EXPIRE=365
+
 # These are the default values for fields
 # which will be placed in the certificate.
 # Don't leave any of these fields blank.

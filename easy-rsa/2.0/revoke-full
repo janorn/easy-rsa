@@ -25,7 +25,7 @@ if [ "$KEY_DIR" ]; then
 
     # generate a new CRL -- try to be compatible with
     # intermediate PKIs
-    $OPENSSL ca -gencrl -out "$CRL" -config "$KEY_CONFIG"
+    $OPENSSL ca -gencrl -crldays "$CRL_EXPIRE" -out "$CRL" -config "$KEY_CONFIG"
     if [ -e export-ca.crt ]; then
         cat export-ca.crt "$CRL" >"$RT"
     else
