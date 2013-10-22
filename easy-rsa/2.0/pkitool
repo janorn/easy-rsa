@@ -70,6 +70,7 @@ Options:
   --pass     : encrypt private key with password
   --csr      : only generate a CSR, do not sign
   --sign     : sign an existing CSR
+  --signca   : sign an existing CSR from an intermediate CA
   --pkcs12   : generate a combined PKCS#12 file
   --pkcs11   : generate certificate on PKCS#11 token
       lib    : PKCS#11 library
@@ -112,6 +113,7 @@ Examples:
   $PROGNAME --pkcs12 client3  -> Build "client3" certificate/key in PKCS#12 format
   $PROGNAME --csr client4     -> Build "client4" CSR to be signed by another CA
   $PROGNAME --sign client4    -> Sign "client4" CSR
+  $PROGNAME --signca subca2   -> Sign intermediate CA "subca2" CSR
   $PROGNAME --inter interca   -> Build an intermediate key-signing certificate/key
                                Also see ./inherit-inter script.
   $PROGNAME --pkcs11 /usr/lib/pkcs11/lib1 0 010203 "client5 id" client5
@@ -169,6 +171,8 @@ while [ $# -gt 0 ]; do
         --pass     ) NODES_REQ="" ;;
         --csr      ) DO_CA="0" ;;
         --sign     ) DO_REQ="0" ;;
+        --signca   ) DO_REQ="0"
+                     CA_EXT="$CA_EXT -extensions v3_ca" ;;
         --pkcs12   ) DO_P12="1" ;;
         --pkcs11   ) DO_P11="1"
                      PKCS11_MODULE_PATH="$2"
