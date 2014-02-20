@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# Export a certificate and the certificate chain to a choosen path
+#
+# The EXPORT_CA file will contain the CA certificate chain and should be
+# referenced by the OpenVPN "ca" directive in config files.  The ca.crt file
+# will only contain the local intermediate CA -- it's needed by the easy-rsa
+# scripts but not by OpenVPN directly.
+EXPORT_CA="cert-chain.crt"
+
+if [ $# -ne 2 ]; then
+    echo "usage: $0 <intermediate-key-dir> <common-name>"
+    echo "intermediate-key-dir: the KEY_DIR directory of the new intermediate PKI"
+    echo "common-name: the common name of the intermediate certificate in this PKI"
+    exit 1;
+fi
+
+if [ ! -d "$1" ]; then
+	echo "The export key dir '$1' does not exist!"
+	echo "Please create it and reissue the command"
+	exit 1;
+fi
+
+if [ "$KEY_DIR" ]; then
+    cp "$KEY_DIR/$2.crt" "$1/$2.crt"
+    # If this intermediate was setup with a CSR file ignore the key
+    if [ -f "$KEY_DIR/$2.key" ]; then
+	   cp "$KEY_DIR/$2.key" "$1/$2.key"
+    else
+	   echo "No key file! Assuming this cert was issued using a csr file"
+    fi
+
+    if [ -e "$KEY_DIR/export-ca.crt" ]; then
+        PARENT_CA="$KEY_DIR/export-ca.crt"
+    else
+        PARENT_CA="$KEY_DIR/ca.crt"
+    fi
+    cp "$PARENT_CA" "$1/$EXPORT_CA"
+    cat "$1/ca.crt" >> "$1/$EXPORT_CA"
+    echo "Please transfer the KEY_DIR=$1 to the appropriate location"
+else
+    echo 'Please source the vars script first (i.e. "source ./vars")'
+    echo 'Make sure you have edited it to reflect your configuration.'
+fi
