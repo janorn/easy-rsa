@@ -6,7 +6,7 @@
 # referenced by the OpenVPN "ca" directive in config files.  The ca.crt file
 # will only contain the local intermediate CA -- it's needed by the easy-rsa
 # scripts but not by OpenVPN directly.
-EXPORT_CA="cert-chain.crt"
+EXPORT_CA="$2/chain.pem"
 
 if [ $# -ne 2 ]; then
     echo "usage: $0 <intermediate-key-dir> <common-name>"
@@ -21,11 +21,16 @@ if [ ! -d "$1" ]; then
 	exit 1;
 fi
 
+if [ ! -d "$1/$2" ]; then
+	echo "Creating cert dir $2"
+	mkdir "$1/$2"
+fi
+
 if [ "$KEY_DIR" ]; then
-    cp "$KEY_DIR/$2.crt" "$1/$2.crt"
+    cp "$KEY_DIR/$2.crt" "$1/$2/cert.crt"
     # If this intermediate was setup with a CSR file ignore the key
     if [ -f "$KEY_DIR/$2.key" ]; then
-	   cp "$KEY_DIR/$2.key" "$1/$2.key"
+	   cp "$KEY_DIR/$2.key" "$1/$2/cert.key"
     else
 	   echo "No key file! Assuming this cert was issued using a csr file"
     fi
@@ -36,7 +41,7 @@ if [ "$KEY_DIR" ]; then
         PARENT_CA="$KEY_DIR/ca.crt"
     fi
     cp "$PARENT_CA" "$1/$EXPORT_CA"
-    cat "$1/ca.crt" >> "$1/$EXPORT_CA"
+    cat "$1/$2.crt" >> "$1/$EXPORT_CA"
     echo "Please transfer the KEY_DIR=$1 to the appropriate location"
 else
     echo 'Please source the vars script first (i.e. "source ./vars")'
