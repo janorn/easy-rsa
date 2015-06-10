@@ -1,0 +1,38 @@
+easy-rsa with subjectAltName support
+by Vicente Aguilar <bisente@bisente.com>
+http://www.bisente.com/proyectos/easy-rsa-subjectaltname
+updates by Msquared <http://www.msquared.id.au/>
+http://www.msquared.id.au/articles/easy-rsa-subjectaltname/
+
+
+INTRODUCTION
+============
+
+This is a modified version of OpenVPN's easy-rsa script, that allows you to
+create RSA keys valid for more than one domain by using the subjectAltName
+attribute.
+
+While I don't see this as a good practice when using the certificate for
+identity validation (like in establishing a VPN), it can be useful if you
+have a web server with just one IP address and want to provide HTTPS service
+for several virtual domains without the browser complaining that the site
+domain doesn't match the certificate's domain.
+
+
+USAGE
+=====
+
+Use the script as usual, see README.orig and http://openvpn.net/easyrsa.html.
+If you want to make a key with several domains, just add them as parameters
+on the command line:
+
+  # ./build-key-server www.domain1.com www.domain2.com www.domain3.com
+
+The key's certificate in ./keys/www.domain1.com.crt will contain a section
+like:
+
+    X509v3 Subject Alternative Name: 
+        DNS:www.domain1.com, DNS:www.domain2.com, DNS:www.domain3.com
+
+Any modern browser should accept the certificate for all these domains
+without complaining.

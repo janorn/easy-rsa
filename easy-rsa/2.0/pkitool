@@ -273,31 +273,42 @@ if [ $DO_ROOT -eq 1 ]; then
     if [ -z "$KEY_CN" ]; then
         if [ "$1" ]; then
             KEY_CN="$1"
+            KEY_ALTNAMES="DNS:${KEY_CN}"
         elif [ "$KEY_ORG" ]; then
             KEY_CN="$KEY_ORG CA"
+            KEY_ALTNAMES="$KEY_CN"
         fi
     fi
     if [ $BATCH ] && [ "$KEY_CN" ]; then
         echo "Using CA Common Name:" "$KEY_CN"
+        KEY_ALTNAMES="$KEY_CN"
     fi
     FN="$KEY_CN"
 elif [ $BATCH ] && [ "$KEY_CN" ]; then
     echo "Using Common Name:" "$KEY_CN"
+    KEY_ALTNAMES="$KEY_CN"
     FN="$KEY_CN"
     if [ "$1" ]; then
         FN="$1"
     fi
 else
-    if [ $# -ne 1 ]; then
+    if [ $# -eq 0 ]; then
         usage
         exit 1
     else
         KEY_CN="$1"
+        KEY_ALTNAMES="DNS:$1"
+        shift
+        while [ "x$1" != "x" ]
+        do
+          KEY_ALTNAMES="${KEY_ALTNAMES},DNS:$1"
+          shift
+        done
     fi
     FN="$KEY_CN"
 fi
 
-export CA_EXPIRE KEY_EXPIRE KEY_OU KEY_NAME KEY_CN PKCS11_MODULE_PATH PKCS11_PIN
+export CA_EXPIRE KEY_EXPIRE KEY_OU KEY_NAME KEY_CN PKCS11_MODULE_PATH PKCS11_PIN KEY_ALTNAMES
 
 # Show parameters (debugging)
 if [ $DEBUG -eq 1 ]; then
@@ -309,6 +320,7 @@ if [ $DEBUG -eq 1 ]; then
     echo NODES_P12 $NODES_P12
     echo DO_P12 $DO_P12
     echo KEY_CN $KEY_CN
+    echo KEY_ALTNAMES $KEY_ALTNAMES
     echo BATCH $BATCH
     echo DO_ROOT $DO_ROOT
     echo KEY_EXPIRE $KEY_EXPIRE

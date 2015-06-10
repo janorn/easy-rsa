@@ -20,6 +20,9 @@ if [ "$KEY_DIR" ]; then
     export KEY_OU=""
     export KEY_NAME=""
 
+	# required due to hack in openssl.cnf that supports Subject Alternative Names
+    export KEY_ALTNAMES=""
+
     # revoke key and generate a new CRL
     $OPENSSL ca -revoke "$1.crt" -config "$KEY_CONFIG"
 
